@@ -1,0 +1,30 @@
+# DB file
+*.db
+
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+vendor
+
+# Specific files
+go.mod
+go.sum
+
+# Compiled binary files
+*.exe
+*.test
+*.prof
+*.out
+*.test
+
+# Log files
+*.log
+
+# Dependency directories
+/bin
+/pkg
