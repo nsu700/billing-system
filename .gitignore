@@ -12,8 +12,6 @@ _test
 vendor
 
 # Specific files
-go.mod
-go.sum
 
 # Compiled binary files
 *.exe
