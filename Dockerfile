@@ -30,4 +30,4 @@ COPY --from=builder /app/billing .
 EXPOSE 8080
 
 # Run the binary and mount the index.html file
-CMD ["./billing"]
+CMD ["/app/billing"]
