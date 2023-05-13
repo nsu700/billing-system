@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -22,25 +23,23 @@ func main() {
 
 	db, err = sql.Open("sqlite", dbPath)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatalf("Failed to open database: %v", err)
 	}
 	defer db.Close()
 
 	// Create the table if it doesn't exist
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS mytable (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, amount INTEGER, type TEXT, purpose TEXT)")
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatalf("Failed to create table: %v", err)
 	}
 
 	http.HandleFunc("/submit", submitHandler)
 	http.HandleFunc("/", indexHandler)
 
-	fmt.Println("Server listening on port 8080...")
+	log.Println("Server listening on port 8080...")
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }
 
@@ -49,6 +48,7 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Printf("Failed to parse form data: %v", err)
 		return
 	}
 
@@ -63,20 +63,21 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		// Insert the values into the database
 		stmt, err := db.Prepare("INSERT INTO mytable (date, amount, type, purpose) VALUES (?, ?, ?, ?)")
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("Failed to prepare statement: %v", err)
 			return
 		}
 		defer stmt.Close()
 
 		_, err = stmt.Exec(dates[i], amounts[i], types[i], purposes[i])
 		if err != nil {
-			fmt.Println(err)
+			log.Panicf("Failed to execute statement: %v", err)
 			return
 		}
 	}
 
 	// Respond with a success message
 	fmt.Fprintln(w, "Form submission received and written to database!")
+	log.Println("Form submission received and written to database.")
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
