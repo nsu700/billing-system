@@ -10,11 +10,16 @@ jobs:
 
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     env:
       DOCKER_TARGET_PLATFORM: linux/arm/v7
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --platform linux/arm64 --tag billing-system:$(date +%s)
+    - uses: uraimo/run-on-arch-action@v2
+      name: Run commands
+      id: runcmd
+      with:
+        arch: armv7
+        distro: ubuntu18.04
+        run: docker build . --file Dockerfile --platform linux/arm64 --tag billing-system:$(date +%s)
