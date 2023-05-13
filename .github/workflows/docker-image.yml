@@ -10,16 +10,25 @@ jobs:
 
   build:
 
-    runs-on: ubuntu-18.04
-    env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, darwin]
+        goarch: [amd64, arm64]
+        exclude:
+          - goarch: arm64
+            goos: darwin
+          - goarch: amd64
+            goos: linux
 
     steps:
     - uses: actions/checkout@v3
-    - uses: uraimo/run-on-arch-action@v2
-      name: Run commands
-      id: runcmd
+    - uses: wangyoucao577/go-release-action@v1
       with:
-        arch: armv7
-        distro: ubuntu18.04
-        run: docker build . --file Dockerfile --platform linux/arm64 --tag billing-system:$(date +%s)
+        github_token: ${{ secrets.TOKEN }}
+        release_name: billing-system
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
+        project_path: "."
+        binary_name: "billing-system"
